@@ -1,6 +1,6 @@
 package services;
 
-import beans.LoginResponse;
+import beans.login.LoginResponse;
 import com.google.gson.Gson;
 import persistence.UserEntity;
 import utils.HibernateUtil;

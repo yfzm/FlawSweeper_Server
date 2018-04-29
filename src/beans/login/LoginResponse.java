@@ -1,4 +1,4 @@
-package beans;
+package beans.login;
 
 public class LoginResponse {
     Boolean status;

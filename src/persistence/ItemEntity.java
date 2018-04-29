@@ -17,6 +17,7 @@ public class ItemEntity {
     private Integer redoCount;
     private byte mode;
     private String reason;
+    private UserEntity user;
 
     @Id
     @Column(name = "item_id", nullable = false, length = 32)
@@ -116,6 +117,16 @@ public class ItemEntity {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     @Override

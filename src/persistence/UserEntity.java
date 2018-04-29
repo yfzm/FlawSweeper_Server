@@ -1,7 +1,9 @@
 package persistence;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "user", schema = "flaw_sweeper", catalog = "")
@@ -13,6 +15,7 @@ public class UserEntity {
     private String email;
     private String phone;
     private Byte status;
+    private Set<ItemEntity> items;
 
     @Id
     @Column(name = "user_id", nullable = false, length = 32)
@@ -82,6 +85,17 @@ public class UserEntity {
 
     public void setStatus(Byte status) {
         this.status = status;
+    }
+
+
+    @OneToMany(mappedBy = "user")
+    @OrderBy(value = "createTime")
+    public Set<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<ItemEntity> items) {
+        this.items = items;
     }
 
     @Override
