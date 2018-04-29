@@ -10,6 +10,9 @@ public class UserEntity {
     private String username;
     private String password;
     private int type;
+    private String email;
+    private String phone;
+    private Byte status;
 
     @Id
     @Column(name = "user_id", nullable = false, length = 32)
@@ -51,6 +54,36 @@ public class UserEntity {
         this.type = type;
     }
 
+    @Basic
+    @Column(name = "email", nullable = true, length = 128)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Basic
+    @Column(name = "phone", nullable = true, length = 16)
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @Basic
+    @Column(name = "status", nullable = true)
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,12 +92,15 @@ public class UserEntity {
         return type == that.type &&
                 Objects.equals(userId, that.userId) &&
                 Objects.equals(username, that.username) &&
-                Objects.equals(password, that.password);
+                Objects.equals(password, that.password) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(phone, that.phone) &&
+                Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(userId, username, password, type);
+        return Objects.hash(userId, username, password, type, email, phone, status);
     }
 }
