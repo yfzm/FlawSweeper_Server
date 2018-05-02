@@ -3,6 +3,7 @@ package persistence;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "item", schema = "flaw_sweeper", catalog = "")
@@ -18,6 +19,7 @@ public class ItemEntity {
     private byte mode;
     private String reason;
     private UserEntity user;
+    private Set<TagEntity> tags;
 
     @Id
     @Column(name = "item_id", nullable = false, length = 32)
@@ -127,6 +129,17 @@ public class ItemEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "item_tag", joinColumns = {@JoinColumn(name = "item_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    public Set<TagEntity> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TagEntity> tags) {
+        this.tags = tags;
     }
 
     @Override

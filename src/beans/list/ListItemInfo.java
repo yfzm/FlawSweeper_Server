@@ -8,7 +8,7 @@ public class ListItemInfo {
     private String id;
     private String title;
     private List<String> qTag;
-    private Timestamp createTime;
+    private long createTime;
     private Boolean bySelf;
     private int viewCount;
     private int redoCount;
@@ -37,11 +37,11 @@ public class ListItemInfo {
         this.qTag = qTag;
     }
 
-    public Timestamp getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 

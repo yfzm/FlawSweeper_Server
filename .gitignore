@@ -3,5 +3,4 @@ lib/
 out/
 
 # uncomment below when not in dev environment
-web/index.html
-web/static/
+web/

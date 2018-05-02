@@ -1,4 +1,4 @@
-package services;
+package services.servlet.auth;
 
 import beans.login.LoginResponse;
 import com.google.gson.Gson;

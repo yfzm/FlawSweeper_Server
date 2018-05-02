@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306/flaw_sweeper?serverTimezone=UTC</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/flaw_sweeper?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf-8</property>
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hbm2ddl.auto">update</property> -->
         <property name="connection.username">root</property>

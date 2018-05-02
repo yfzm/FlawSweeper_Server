@@ -1,10 +1,11 @@
-package services;
+package services.servlet.info;
 
 import beans.list.ListItemInfo;
 import beans.list.ListResponse;
 import com.google.gson.Gson;
 import config.ConfigConstant;
 import persistence.ItemEntity;
+import persistence.TagEntity;
 import persistence.UserEntity;
 import utils.HibernateUtil;
 
@@ -28,8 +29,10 @@ public class ListServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
         String page = request.getParameter("page");
+        String method = request.getParameter("method");
 
         if (page != null)
             System.out.println(page);
@@ -37,6 +40,11 @@ public class ListServlet extends HttpServlet {
             System.out.println("No page!!");
             return;
         }
+
+        if (method == null || method.equals("time"))
+            method = "createTime";
+        else
+            method = "viewCount";
 
         HttpSession session = request.getSession();
         if (session == null || session.getAttribute("userId") == null) {
@@ -48,13 +56,13 @@ public class ListServlet extends HttpServlet {
         String user_id = session.getAttribute("userId").toString();
 
         HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
-        queryAndReturnList(writer, user_id, page);
+        queryAndReturnList(writer, user_id, page, method);
         HibernateUtil.getSessionFactory().getCurrentSession().getTransaction().commit();
 
     }
 
     @SuppressWarnings("unchecked")
-    private void queryAndReturnList(PrintWriter writer, String user_id, String page_str) {
+    private void queryAndReturnList(PrintWriter writer, String user_id, String page_str, String method) {
 //        String hql = "FROM UserEntity WHERE userId = ?";
 //        List<UserEntity> users = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)
 //                .setParameter(0, user_id)
@@ -73,7 +81,7 @@ public class ListServlet extends HttpServlet {
             return;
         }
 
-        String hql = "from ItemEntity where user.userId = ? or mode = 0 order by createTime desc ";
+        String hql = "from ItemEntity where user.userId = ? or mode = 0 order by " + method + " desc ";
         List<ItemEntity> items = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)
                 .setParameter(0, user_id)
                 .list();
@@ -95,9 +103,16 @@ public class ListServlet extends HttpServlet {
                 ListItemInfo info = new ListItemInfo();
                 info.setId(item.getItemId());
                 info.setTitle(item.getTitle());
-                // TODO: query form tag table
-                info.setqTag(null);
-                info.setCreateTime(item.getCreateTime());
+                // tags
+                Set<TagEntity> tag_set = item.getTags();
+                List<String> tags = new ArrayList<>();
+                for (TagEntity tag : tag_set) {
+                    tags.add(tag.getTagContent());
+                    System.out.println(tag.getTagContent());
+                }
+                info.setqTag(tags);
+                // get time stamp (long)
+                info.setCreateTime(item.getCreateTime().getTime());
                 info.setBySelf(item.getMode() == 1);
                 info.setRedoCount(item.getRedoCount());
                 info.setViewCount(item.getViewCount());
@@ -105,7 +120,7 @@ public class ListServlet extends HttpServlet {
             }
             response.setItems(listItemInfos);
         }
-        writer.println(gson.toJson(response, ListResponse.class));
+        writer.print(gson.toJson(response, ListResponse.class));
 
 //        List<UserEntity> users = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)
 //                .setParameter(0, username)
