@@ -10,6 +10,8 @@ public class RedoEntity {
     private int redoId;
     private String answer;
     private Timestamp redoTime;
+    private ItemEntity item;
+    private UserEntity user;
 
     @Id
     @Column(name = "redo_id", nullable = false)
@@ -39,6 +41,26 @@ public class RedoEntity {
 
     public void setRedoTime(Timestamp redoTime) {
         this.redoTime = redoTime;
+    }
+
+    @ManyToOne()
+    @JoinColumn(name = "item_id")
+    public ItemEntity getItem() {
+        return item;
+    }
+
+    public void setItem(ItemEntity item) {
+        this.item = item;
+    }
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     @Override

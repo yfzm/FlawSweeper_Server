@@ -16,6 +16,7 @@ public class UserEntity {
     private String phone;
     private Byte status;
     private Set<ItemEntity> items;
+    private Set<RedoEntity> redoes;
 
     @Id
     @Column(name = "user_id", nullable = false, length = 32)
@@ -96,6 +97,15 @@ public class UserEntity {
 
     public void setItems(Set<ItemEntity> items) {
         this.items = items;
+    }
+
+    @OneToMany(mappedBy = "user")
+    public Set<RedoEntity> getRedoes() {
+        return redoes;
+    }
+
+    public void setRedoes(Set<RedoEntity> redoes) {
+        this.redoes = redoes;
     }
 
     @Override

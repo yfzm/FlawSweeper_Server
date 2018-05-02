@@ -58,6 +58,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private String getLoginId(String username, String password) {
         String hql = "FROM UserEntity WHERE username = ? AND password = ? AND type = 0";
         List<UserEntity> users = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)

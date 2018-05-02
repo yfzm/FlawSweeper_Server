@@ -20,6 +20,7 @@ public class ItemEntity {
     private String reason;
     private UserEntity user;
     private Set<TagEntity> tags;
+    private Set<RedoEntity> redoSet;
 
     @Id
     @Column(name = "item_id", nullable = false, length = 32)
@@ -140,6 +141,15 @@ public class ItemEntity {
 
     public void setTags(Set<TagEntity> tags) {
         this.tags = tags;
+    }
+
+    @OneToMany(mappedBy = "item")
+    public Set<RedoEntity> getRedoSet() {
+        return redoSet;
+    }
+
+    public void setRedoSet(Set<RedoEntity> redoSet) {
+        this.redoSet = redoSet;
     }
 
     @Override
