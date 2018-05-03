@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
+import static utils.InfoAPI.getRandomId;
 import static utils.InfoAPI.getTagEntities;
 
 @WebServlet(name = "AddItemServlet", urlPatterns = "/addItem")
@@ -70,7 +71,7 @@ public class AddItemServlet extends HttpServlet {
         }
 
         ItemEntity item = new ItemEntity();
-        String item_id = createItemId();
+        String item_id = getRandomId();
         item.setItemId(item_id);
         item.setTitle(addRequest.getTitle());
         item.setContent(addRequest.getqText());
@@ -96,11 +97,6 @@ public class AddItemServlet extends HttpServlet {
 
     }
 
-    private String createItemId() {
-        UUID uuid = UUID.randomUUID();
-        String str = uuid.toString();
-        return str.replace("-", "");
-    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

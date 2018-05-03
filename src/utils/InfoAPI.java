@@ -7,6 +7,7 @@ import persistence.UserEntity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class InfoAPI {
 
@@ -52,5 +53,11 @@ public class InfoAPI {
             }
         }
         return tag_set;
+    }
+
+    public static String getRandomId() {
+        UUID uuid = UUID.randomUUID();
+        String str = uuid.toString();
+        return str.replace("-", "");
     }
 }
