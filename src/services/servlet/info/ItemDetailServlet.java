@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@WebServlet(name = "ItemDetailServlet", urlPatterns = "/detail")
+@WebServlet(name = "ItemDetailServlet", urlPatterns = "/getDetail")
 public class ItemDetailServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

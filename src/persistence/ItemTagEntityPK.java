@@ -1,10 +1,12 @@
 package persistence;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Objects;
 
+//@Embeddable
 public class ItemTagEntityPK implements Serializable {
     private String itemId;
     private int tagId;
