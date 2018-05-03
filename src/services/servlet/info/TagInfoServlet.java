@@ -1,5 +1,7 @@
 package services.servlet.info;
 
+import beans.tag.TagResponse;
+import com.google.gson.Gson;
 import persistence.TagEntity;
 import utils.HibernateUtil;
 import utils.InfoAPI;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "TagInfoServlet", urlPatterns = "/getAllTags")
@@ -31,12 +34,18 @@ public class TagInfoServlet extends HttpServlet {
 //            return;
 //        }
 
+        Gson gson = new Gson();
+        TagResponse tagResponse = new TagResponse();
+        List<String> tagList = new ArrayList<>();
+
         HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
         List<TagEntity> tags = InfoAPI.getAllTags();
         HibernateUtil.getSessionFactory().getCurrentSession().getTransaction().commit();
 
         for (TagEntity tag: tags) {
-            writer.print(tag.getTagContent() + " ");
+            tagList.add(tag.getTagContent());
         }
+        tagResponse.setTags(tagList);
+        writer.print(gson.toJson(tagResponse, TagResponse.class));
     }
 }

@@ -2,6 +2,7 @@ package utils;
 
 import persistence.ItemEntity;
 import persistence.TagEntity;
+import persistence.UserEntity;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,10 @@ public class InfoAPI {
     @SuppressWarnings("unchecked")
     public static ItemEntity getItemViaPK(String item_id) {
         return HibernateUtil.getSessionFactory().getCurrentSession().get(ItemEntity.class, item_id);
+    }
+
+    public static UserEntity getUserViaPK(String user_id) {
+        return HibernateUtil.getSessionFactory().getCurrentSession().get(UserEntity.class, user_id);
     }
 
     public static Set<TagEntity> getTagEntities(List<String> tags) {
