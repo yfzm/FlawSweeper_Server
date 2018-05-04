@@ -18,6 +18,8 @@ import java.net.URLDecoder;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = "/doRegister")
 public class RegisterServlet extends HttpServlet {
+    private String user_id;
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
@@ -32,6 +34,9 @@ public class RegisterServlet extends HttpServlet {
         HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
         registerAndReturn(writer, JSONString);
         HibernateUtil.getSessionFactory().getCurrentSession().getTransaction().commit();
+
+        request.getSession().setAttribute("userId", user_id);
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,7 +67,7 @@ public class RegisterServlet extends HttpServlet {
         }
 
         UserEntity user = new UserEntity();
-        String user_id = InfoAPI.getRandomId();
+        user_id = InfoAPI.getRandomId();
         user.setUserId(user_id);
         user.setUsername(registerRequest.getUsername());
         user.setPassword(registerRequest.getPassword());

@@ -34,6 +34,8 @@ public class DeleteItemServlet extends HttpServlet {
         HibernateUtil.getSessionFactory().getCurrentSession().delete(item);
         HibernateUtil.getSessionFactory().getCurrentSession().getTransaction().commit();
 
+        deleteResponse.setStatus(true);
+        writer.print(gson.toJson(deleteResponse, DeleteResponse.class));
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
