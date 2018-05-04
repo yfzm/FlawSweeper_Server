@@ -22,7 +22,8 @@ public class DeleteItemServlet extends HttpServlet {
         Gson gson = new Gson();
         String item_id = request.getParameter("id");
         HttpSession session = request.getSession();
-        if (item_id == null || session == null || session.getAttribute("userId") == null) {
+        if (item_id == null || session == null
+                || (session.getAttribute("userId") == null && session.getAttribute("adminId") == null)) {
             deleteResponse.setStatus(false);
             writer.print(gson.toJson(deleteResponse, DeleteResponse.class));
             return;

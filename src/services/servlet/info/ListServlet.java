@@ -31,15 +31,12 @@ public class ListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
+        String user_id;
+//        String adimin_id;
+        Boolean is_admin;
+
         String page = request.getParameter("page");
         String method = request.getParameter("method");
-
-        if (page != null)
-            System.out.println(page);
-        else {
-            System.out.println("No page!!");
-            return;
-        }
 
         if (method == null || method.equals("time"))
             method = "createTime";
@@ -47,22 +44,38 @@ public class ListServlet extends HttpServlet {
             method = "viewCount";
 
         HttpSession session = request.getSession();
-        if (session == null || session.getAttribute("userId") == null) {
+        if (session == null) {
+            writer.print("{\"status\":false}");
+            return;
+        }
+
+        if (session.getAttribute("userId") != null) {
+            is_admin = false;
+            user_id = session.getAttribute("userId").toString();
+            if (page == null) {
+                writer.print("{\"status\":false}");
+                return;
+            }
+        } else if (session.getAttribute("adminId") != null) {
+            is_admin = true;
+            user_id = session.getAttribute("adminId").toString();
+        } else {
             writer.print("{\"status\":false}");
             return;
         }
 //        writer.print("abc");
 
-        String user_id = session.getAttribute("userId").toString();
+//        user_id = session.getAttribute("userId").toString();
 
         HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
-        queryAndReturnList(writer, user_id, page, method);
+        queryAndReturnList(writer, user_id, page, method, is_admin);
         HibernateUtil.getSessionFactory().getCurrentSession().getTransaction().commit();
 
     }
 
     @SuppressWarnings("unchecked")
-    private void queryAndReturnList(PrintWriter writer, String user_id, String page_str, String method) {
+    private void queryAndReturnList(PrintWriter writer, String user_id,
+                                    String page_str, String method, Boolean is_admin) {
 //        String hql = "FROM UserEntity WHERE userId = ?";
 //        List<UserEntity> users = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)
 //                .setParameter(0, user_id)
@@ -72,54 +85,73 @@ public class ListServlet extends HttpServlet {
 //
 //        }
         Gson gson = new Gson();
-
         ListResponse response = new ListResponse();
-        int page = Integer.parseInt(page_str);
-        if (page <= 0) {
-            response.setStatus(false);
-            writer.println(gson.toJson(response, ListResponse.class));
-            return;
+
+        int page = 0;
+        if (!is_admin) {
+            page = Integer.parseInt(page_str);
+            if (page <= 0) {
+                response.setStatus(false);
+                writer.println(gson.toJson(response, ListResponse.class));
+                return;
+            }
         }
 
-        String hql = "from ItemEntity where user.userId = ? or mode = 0 order by " + method + " desc ";
+        String hql;
+        if (is_admin) {
+            hql = "from ItemEntity where user.userId = ? order by " + method + " desc ";
+        } else {
+            hql = "from ItemEntity where user.userId = ? or mode = 0 order by " + method + " desc ";
+        }
         List<ItemEntity> items = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)
                 .setParameter(0, user_id)
                 .list();
 
         response.setStatus(true);
 
-        int begin_num = ConfigConstant.PAGE_NUM * (page - 1);  // start at 0
+        int begin_num = 0;
         int items_size = items.size();
+        if (!is_admin) {
+            begin_num = ConfigConstant.PAGE_NUM * (page - 1);  // start at 0
+        }
+
 
         if (items_size <= begin_num) {
             response.setNum(0);
-        } else {
-
-            int num = Math.min(ConfigConstant.PAGE_NUM, items_size - begin_num);
-            response.setNum(num);
-            ArrayList<ListItemInfo> listItemInfos = new ArrayList<>();
-            for (int index = begin_num; index < begin_num + num; index++) {
-                ItemEntity item = items.get(index);
-                ListItemInfo info = new ListItemInfo();
-                info.setId(item.getItemId());
-                info.setTitle(item.getTitle());
-                // tags
-                Set<TagEntity> tag_set = item.getTags();
-                List<String> tags = new ArrayList<>();
-                for (TagEntity tag : tag_set) {
-                    tags.add(tag.getTagContent());
-                    System.out.println(tag.getTagContent());
-                }
-                info.setqTag(tags);
-                // get time stamp (long)
-                info.setCreateTime(item.getCreateTime().getTime());
-                info.setBySelf(item.getMode() == 1);
-                info.setRedoCount(item.getRedoCount());
-                info.setViewCount(item.getViewCount());
-                listItemInfos.add(info);
-            }
-            response.setItems(listItemInfos);
+            writer.print(gson.toJson(response, ListResponse.class));
+            return;
         }
+
+
+        int num = items_size;
+        if (!is_admin) {
+            num = Math.min(ConfigConstant.PAGE_NUM, items_size - begin_num);
+        }
+
+        response.setNum(num);
+        ArrayList<ListItemInfo> listItemInfos = new ArrayList<>();
+        for (int index = begin_num; index < begin_num + num; index++) {
+            ItemEntity item = items.get(index);
+            ListItemInfo info = new ListItemInfo();
+            info.setId(item.getItemId());
+            info.setTitle(item.getTitle());
+            // tags
+            Set<TagEntity> tag_set = item.getTags();
+            List<String> tags = new ArrayList<>();
+            for (TagEntity tag : tag_set) {
+                tags.add(tag.getTagContent());
+                System.out.println(tag.getTagContent());
+            }
+            info.setqTag(tags);
+            // get time stamp (long)
+            info.setCreateTime(item.getCreateTime().getTime());
+            info.setBySelf(item.getMode() == 1);
+            info.setRedoCount(item.getRedoCount());
+            info.setViewCount(item.getViewCount());
+            listItemInfos.add(info);
+        }
+        response.setItems(listItemInfos);
+
         writer.print(gson.toJson(response, ListResponse.class));
 
 //        List<UserEntity> users = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)

@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -41,8 +42,14 @@ public class LoginServlet extends HttpServlet {
             LoginResponse loginResponse = new LoginResponse();
 
             if (loginId != null) {
-                String auth = (isAdmin) ? "adminId" : "userId";
-                request.getSession().setAttribute(auth, loginId);
+                HttpSession session = request.getSession();
+                if (isAdmin) {
+                    session.removeAttribute("userId");
+                    session.setAttribute("adminId", loginId);
+                } else {
+                    session.removeAttribute("adminId");
+                    session.setAttribute("userId", loginId);
+                }
                 loginResponse.setStatus(true);
             } else {
                 loginResponse.setStatus(false);
