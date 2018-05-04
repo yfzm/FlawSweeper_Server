@@ -32,11 +32,19 @@ public class AddItemServlet extends HttpServlet {
         PrintWriter writer = response.getWriter();
 
         HttpSession session = request.getSession();
-        if (session == null || session.getAttribute("userId") == null) {
+        if (session == null ||
+                (session.getAttribute("userId") == null && session.getAttribute("adminId") == null)) {
             writer.print("{\"status\":false}");
             return;
         }
-        String user_id = session.getAttribute("userId").toString();
+
+        Boolean is_admin = (session.getAttribute("adminId") != null);
+        String user_id;
+        if (is_admin) {
+            user_id = session.getAttribute("adminId").toString();
+        } else {
+            user_id = session.getAttribute("userId").toString();
+        }
 
         String JSONString = request.getParameter("json");
         JSONString = URLDecoder.decode(JSONString, "utf-8");
@@ -45,14 +53,13 @@ public class AddItemServlet extends HttpServlet {
             return;
         }
 
-
         HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
-        addItemAndReturnId(writer, JSONString, user_id);
+        addItemAndReturnId(writer, JSONString, user_id, is_admin);
         HibernateUtil.getSessionFactory().getCurrentSession().getTransaction().commit();
 
     }
 
-    private void addItemAndReturnId(PrintWriter writer, String JSONString, String user_id) {
+    private void addItemAndReturnId(PrintWriter writer, String JSONString, String user_id, Boolean is_admin) {
         Gson gson = new Gson();
 //        System.out.println(JSONString);
         AddRequest addRequest = gson.fromJson(JSONString, AddRequest.class);
@@ -80,7 +87,11 @@ public class AddItemServlet extends HttpServlet {
         item.setViewCount(0);
         item.setEditCount(0);
         item.setRedoCount(0);
-        item.setMode((byte) 1);
+        if (is_admin) {
+            item.setMode((byte) 0);
+        } else {
+            item.setMode((byte) 1);
+        }
         item.setReason(addRequest.getReason());
 
         item.setUser(user);

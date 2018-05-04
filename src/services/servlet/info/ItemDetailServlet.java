@@ -40,11 +40,19 @@ public class ItemDetailServlet extends HttpServlet {
         }
 
         HttpSession session = request.getSession();
-        if (session == null || session.getAttribute("userId") == null) {
+        if (session == null ||
+                (session.getAttribute("userId") == null && session.getAttribute("adminId") == null)) {
             writer.print("{\"status\":false}");
             return;
         }
-        String user_id = session.getAttribute("userId").toString();
+
+        Boolean is_admin = (session.getAttribute("adminId") != null);
+        String user_id;
+        if (is_admin) {
+            user_id = session.getAttribute("adminId").toString();
+        } else {
+            user_id = session.getAttribute("userId").toString();
+        }
 
         HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
         queryAndReturnDetail(writer, id, user_id);
