@@ -30,15 +30,19 @@ public class LoginServlet extends HttpServlet {
 
             String username = request.getParameter("username");
             String password = request.getParameter("password");
+            String type = request.getParameter("type");
+
+            Boolean isAdmin = type != null;
 
             System.out.println(username + " " + password);
             HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
 
-            String loginId = getLoginId(username, password);
+            String loginId = getLoginId(username, password, isAdmin);
             LoginResponse loginResponse = new LoginResponse();
 
             if (loginId != null) {
-                request.getSession().setAttribute("userId", loginId);
+                String auth = (isAdmin) ? "adminId" : "userId";
+                request.getSession().setAttribute(auth, loginId);
                 loginResponse.setStatus(true);
             } else {
                 loginResponse.setStatus(false);
@@ -59,8 +63,13 @@ public class LoginServlet extends HttpServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private String getLoginId(String username, String password) {
-        String hql = "FROM UserEntity WHERE username = ? AND password = ? AND type = 0";
+    private String getLoginId(String username, String password, Boolean isAdmin) {
+        String hql;
+        if (isAdmin) {
+            hql = "FROM UserEntity WHERE username = ? AND password = ? AND type = 1";
+        } else {
+            hql = "FROM UserEntity WHERE username = ? AND password = ? AND type = 0";
+        }
         List<UserEntity> users = HibernateUtil.getSessionFactory().getCurrentSession().createQuery(hql)
                 .setParameter(0, username)
                 .setParameter(1, password)

@@ -19,6 +19,7 @@ public class LogoutServlet extends HttpServlet {
         PrintWriter writer = response.getWriter();
         HttpSession session = request.getSession();
         session.removeAttribute("userId");
-        writer.print("{\"state\": true}");
+        session.removeAttribute("adminId");
+        writer.print("{\"status\": true}");
     }
 }
